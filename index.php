@@ -60,6 +60,7 @@ class Square  extends GeometryShape implements ShapeInterface, PolygonInterface 
 
     function __construct($edg_size)
     {
+        print($edg_size[0]);
         $this->edg_size = (int)$edg_size[0];
     }
 
@@ -125,6 +126,9 @@ class ShapeFactory {
         return new $shape($params);
     }
 }
+
+class UnsuportedShapeException extends Exception {}
+class WrongParamCountException extends Exception {}
 
 
 
