@@ -140,10 +140,12 @@ class ShapeFactory
      */
     public static function createShape($shape, $params)
     {
+        //check the shape existance
         if (!class_exists($shape)) {
             throw new UnsuportedShapeException;
         }
 
+        // check the params count
         $reflec = new ReflectionClass($shape);
         if( $reflec->getConstructor()->getNumberOfParameters() != count($params) ){
             throw new WrongParamCountException;
