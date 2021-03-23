@@ -1,3 +1,4 @@
-Circle بب
+Circle 4
 Rectangle 3,2
 square *
+polygon 5

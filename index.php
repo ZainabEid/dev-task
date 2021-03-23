@@ -8,7 +8,8 @@ define("PI", 3.14);
 /**
  * Interface defining methods for all shapes.
  */
-interface ShapeInterface {
+interface ShapeInterface
+{
     public function getPerimeter();
     public function getArea();
 }
@@ -16,15 +17,18 @@ interface ShapeInterface {
 /**
  * Interface defining methods for polygon shapes.
  */
-interface PolygonInterface {
+interface PolygonInterface
+{
     public function getAngles();
 }
 
 /**
  * Base class for geometry objects.
  */
-class GeometryShape {
-    public function getName(){
+class GeometryShape
+{
+    public function getName()
+    {
         return get_class($this);
     }
 }
@@ -34,9 +38,10 @@ class GeometryShape {
 // THIS IS AN AREAD WHERE YOU SHOULD WRITE YOUR CODE AND MAKE CHANGES.
 // /////////////////////////////////////////////////////////////////////////////
 
-class Circle extends GeometryShape implements ShapeInterface  {
+class Circle extends GeometryShape implements ShapeInterface
+{
 
-    private $radious=0 ;
+    private $radious = 0;
 
     function __construct($radious)
     {
@@ -48,15 +53,17 @@ class Circle extends GeometryShape implements ShapeInterface  {
         return (2 * PI * $this->radious);
     }
 
-    public function getArea(){
+    public function getArea()
+    {
         return  PI * $this->radious ** 2;
     }
 }
 
 
-class Square  extends GeometryShape implements ShapeInterface, PolygonInterface {
+class Square  extends GeometryShape implements ShapeInterface, PolygonInterface
+{
 
-    private $edg_size ;
+    private $edg_size;
 
     function __construct($edg_size)
     {
@@ -80,10 +87,11 @@ class Square  extends GeometryShape implements ShapeInterface, PolygonInterface 
     }
 }
 
-class Rectangle extends GeometryShape implements ShapeInterface, PolygonInterface {
+class Rectangle extends GeometryShape implements ShapeInterface, PolygonInterface
+{
 
-    private $height ;
-    private $width ;
+    private $height;
+    private $width;
 
     function __construct($dimentions)
     {
@@ -110,25 +118,33 @@ class Rectangle extends GeometryShape implements ShapeInterface, PolygonInterfac
 /**
  * Factory class for creating different GeometryShapes.
  */
-class ShapeFactory {
+class ShapeFactory
+{
 
     /**
-    * Creates a specific GeometryShape object from the given attributes.
-    *
-    * Usage examples:
-    *     ShapeFactory::createShape("Circle", 4)
-    *     ShapeFactory::createShape("Rectangle", [3, 5])
-    *
-    * @param string shape Shape to create.
-    * @param array params Array of needed parameters.
-    */
-    public static function createShape($shape, $params){
+     * Creates a specific GeometryShape object from the given attributes.
+     *
+     * Usage examples:
+     *     ShapeFactory::createShape("Circle", 4)
+     *     ShapeFactory::createShape("Rectangle", [3, 5])
+     *
+     * @param string shape Shape to create.
+     * @param array params Array of needed parameters.
+     */
+    public static function createShape($shape, $params)
+    {
+        if(!class_exists($shape)){
+            throw new UnsuportedShapeException;
+        }
         return new $shape($params);
     }
 }
 
-class UnsuportedShapeException extends Exception {}
-class WrongParamCountException extends Exception {}
+class UnsuportedShapeException extends Exception{}
+
+class WrongParamCountException extends Exception
+{
+}
 
 
 
@@ -143,35 +159,32 @@ class WrongParamCountException extends Exception {}
  * Helper function which is used to create shape based on input parameters
  * and return information about that specific shape.
  */
-function getInfo($shape, $params) {
+function getInfo($shape, $params)
+{
     try {
         $shapeObject = ShapeFactory::createShape($shape, $params);
 
         $info = $shapeObject->getName() . PHP_EOL;
-        if ($shapeObject instanceof ShapeInterface)
-        {
-            $info .= "Perimeter is: " . number_format($shapeObject->getPerimeter(),2) . PHP_EOL;
+        if ($shapeObject instanceof ShapeInterface) {
+            $info .= "Perimeter is: " . number_format($shapeObject->getPerimeter(), 2) . PHP_EOL;
             $info .= "Area is: " . number_format($shapeObject->getArea(), 2) . PHP_EOL;
         }
-        if ($shapeObject instanceof PolygonInterface)
-        {
+        if ($shapeObject instanceof PolygonInterface) {
             $info .= "Number of angles: " . $shapeObject->getAngles() . PHP_EOL;
         }
         $info .= PHP_EOL;
 
         return $info;
-    } catch (UnsuportedShapeException $e)
-    {
+    } catch (UnsuportedShapeException $e) {
         return "Unsupported Shape" . PHP_EOL;
-    } catch (WrongParamCountException $e)
-    {
+    } catch (WrongParamCountException $e) {
         return "Wrong Number Of Shape Params" . PHP_EOL;
     }
 }
 
 // while($f = fgets(STDIN)){
 $file = fopen('shapesData.txt', "r");
-while($f = fgets($file)){
+while ($f = fgets($file)) {
     $params = explode(" ", $f);
     $shape = $params[0];
     $shapeParams = explode(",", $params[1]);
