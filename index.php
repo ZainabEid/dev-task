@@ -3,6 +3,8 @@
 // PREDEFINED CONSTANTS, INTERFACES AND CLASSES
 // /////////////////////////////////////////////////////////////////////////////
 
+use function PHPSTORM_META\type;
+
 define("PI", 3.14);
 
 /**
@@ -38,14 +40,16 @@ class GeometryShape
 // THIS IS AN AREAD WHERE YOU SHOULD WRITE YOUR CODE AND MAKE CHANGES.
 // /////////////////////////////////////////////////////////////////////////////
 
+
 class Circle extends GeometryShape implements ShapeInterface
 {
 
-    private $radious = 0;
+    private $radious;
 
-    function __construct($radious)
+    function __construct($params)
     {
-        $this->radious = (int) $radious[0];
+        list($r) = $params;
+        $this->radious = (int)$r;
     }
 
     public function getPerimeter()
@@ -63,22 +67,23 @@ class Circle extends GeometryShape implements ShapeInterface
 class Square  extends GeometryShape implements ShapeInterface, PolygonInterface
 {
 
-    private $edg_size;
+    private $edge;
 
-    function __construct($edg_size)
+    function __construct($params)
     {
-        print($edg_size[0]);
-        $this->edg_size = (int)$edg_size[0];
+        list($e) = $params;
+        $this->edge = (int)$e;
     }
+
 
     public function getPerimeter()
     {
-        return 4 * $this->edg_size;
+        return 4 * $this->edge;
     }
 
     public function getArea()
     {
-        return  $this->edg_size ^ 2;
+        return  intval($this->edge) ^ 2;
     }
 
     public function getAngles()
@@ -93,10 +98,12 @@ class Rectangle extends GeometryShape implements ShapeInterface, PolygonInterfac
     private $height;
     private $width;
 
-    function __construct($dimentions)
+    function __construct($params)
     {
-        $this->height = (int)$dimentions[0];
-        $this->width = (int)$dimentions[1];
+        list($h, $w) = $params;
+
+        $this->height = $h;
+        $this->width = $w;
     }
 
     public function getPerimeter()
@@ -133,19 +140,30 @@ class ShapeFactory
      */
     public static function createShape($shape, $params)
     {
-        if(!class_exists($shape)){
+        if (!class_exists($shape)) {
             throw new UnsuportedShapeException;
         }
+
+        $reflec = new ReflectionClass($shape);
+        if( $reflec->getConstructor()->getNumberOfParameters() != count($params) ){
+            throw new WrongParamCountException;
+        }
+
         return new $shape($params);
     }
 }
 
-class UnsuportedShapeException extends Exception{}
+class UnsuportedShapeException extends Exception
+{
+}
 
 class WrongParamCountException extends Exception
 {
 }
 
+
+// Report all errors except E_NOTICE
+error_reporting(E_ALL & ~E_NOTICE);
 
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -191,4 +209,3 @@ while ($f = fgets($file)) {
 
     echo getInfo($shape, $shapeParams);
 }
-?>
